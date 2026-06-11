@@ -3,6 +3,8 @@ from prometheus_client import Counter, generate_latest
 from fastapi.responses import Response
 from kafka import KafkaProducer
 import json
+from prometheus_client import Counter, Histogram
+import time
 
 app = FastAPI()
 
@@ -56,3 +58,7 @@ def metrics():
         generate_latest(),
         media_type="text/plain"
     )
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}

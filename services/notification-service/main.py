@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from kafka import KafkaConsumer
 import threading
 import json
+from prometheus_client import Counter, Histogram
+import time
 
 app = FastAPI()
 
@@ -34,3 +36,7 @@ def root():
     return {
         "service": "notification-service"
     }
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}

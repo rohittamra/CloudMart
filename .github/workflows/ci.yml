@@ -62,14 +62,21 @@ jobs:
         run: |
           curl --fail http://localhost:8002/orders
 
-      - name: Test Order Service
+      - name: Test Notification Service
         run: |
           curl -X POST http://localhost:8002/orders \
             -H "Content-Type: application/json" \
             -d '{"user":"rohit","product":"laptop"}'
+
       - name: Docker logs
         run: |
           docker compose logs --tail=20 notification-service
+
+      - name: Run health checks
+        run: |
+          curl http://localhost:8000/health
+          curl http://localhost:8001/health
+          curl http://localhost:8002/health
 
       - name: Stop Stack
         if: always()
