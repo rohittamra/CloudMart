@@ -85,7 +85,21 @@ Infrastructure:
            |
            v
         Grafana
-        
+
+
+## Kafka
+
+                        Frontend
+                        │
+                        ▼
+                        Order Service
+                        │
+                        ▼
+                        Kafka Topic
+                        (order-created)
+                        │
+                        ▼
+                        Notification Service
 ---
 
 ## Features
