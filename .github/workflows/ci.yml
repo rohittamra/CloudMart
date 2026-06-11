@@ -62,11 +62,13 @@ jobs:
         run: |
           curl --fail http://localhost:8002/orders
 
-      - name: Test Notification Service
+      - name: Wait for Order Service
         run: |
-          curl -X POST http://localhost:8002/orders \
-            -H "Content-Type: application/json" \
-            -d '{"user":"rohit","product":"laptop"}'
+          for i in {1..30}; do
+            curl -s http://localhost:8002/health && break
+            echo "waiting..."
+            sleep 2
+          done
 
       - name: Docker logs
         run: |

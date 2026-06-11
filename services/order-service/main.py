@@ -5,6 +5,7 @@ from kafka import KafkaProducer
 import json
 from prometheus_client import Counter, Histogram
 import time
+from kafka.errors import NoBrokersAvailable
 
 app = FastAPI()
 
@@ -38,15 +39,6 @@ def create_order(order: dict):
 
     producer.flush()
 
-    return {
-        "message": "Order Created",
-        "order": order
-    }
-
-@app.post("/orders")
-def create_order(order: dict):
-    REQUESTS.inc()
-    orders.append(order)
     return {
         "message": "Order Created",
         "order": order
