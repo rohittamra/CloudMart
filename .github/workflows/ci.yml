@@ -1,72 +1,68 @@
 name: CloudMart CI
 
 on:
-push:
-branches:
-- main
+  push:
+    branches:
+      - main
 
-pull_request:
-branches:
-- main
+  pull_request:
+    branches:
+      - main
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
 
-build:
+    steps:
 
-```
-runs-on: ubuntu-latest
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-steps:
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-  - name: Checkout Repository
-    uses: actions/checkout@v4
+      - name: Build User Service
+        run: |
+          docker build \
+          -t cloudmart-user \
+          ./services/user-service
 
-  - name: Setup Docker Buildx
-    uses: docker/setup-buildx-action@v3
+      - name: Build Product Service
+        run: |
+          docker build \
+          -t cloudmart-product \
+          ./services/product-service
 
-  - name: Build User Service
-    run: |
-      docker build \
-      -t cloudmart-user \
-      ./services/user-service
+      - name: Build Order Service
+        run: |
+          docker build \
+          -t cloudmart-order \
+          ./services/order-service
 
-  - name: Build Product Service
-    run: |
-      docker build \
-      -t cloudmart-product \
-      ./services/product-service
+      - name: Docker Compose Validation
+        run: |
+          docker compose config
 
-  - name: Build Order Service
-    run: |
-      docker build \
-      -t cloudmart-order \
-      ./services/order-service
+      - name: Start Stack
+        run: |
+          docker compose up -d --build
 
-  - name: Docker Compose Validation
-    run: |
-      docker compose config
+      - name: Wait For Services
+        run: sleep 20
 
-  - name: Start Stack
-    run: |
-      docker compose up -d --build
+      - name: Test User Service
+        run: |
+          curl --fail http://localhost:8000/users
 
-  - name: Wait For Services
-    run: sleep 20
+      - name: Test Product Service
+        run: |
+          curl --fail http://localhost:8001/products
 
-  - name: Test User Service
-    run: |
-      curl --fail http://localhost:8000/users
+      - name: Test Order Service
+        run: |
+          curl --fail http://localhost:8002/orders
 
-  - name: Test Product Service
-    run: |
-      curl --fail http://localhost:8001/products
-
-  - name: Test Order Service
-    run: |
-      curl --fail http://localhost:8002/orders
-
-  - name: Stop Stack
-    if: always()
-    run: |
-      docker compose down
-```
+      - name: Stop Stack
+        if: always()
+        run: |
+          docker compose down
